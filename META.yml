@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Every
-version:             0.01
+version:             0.03
 abstract:            return true every N cycles or S seconds
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.36

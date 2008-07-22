@@ -1,33 +1,71 @@
+#!/usr/bin/perl
+
 package Every;
+
 use strict;
+use warnings;
+
+our $VERSION = '0.03';
+$VERSION = eval $VERSION;
 
 use Exporter;
-use vars qw( $VERSION @EXPORT_OK @EXPORT @ISA);
-@EXPORT_OK = qw( &every );
-@EXPORT = @EXPORT_OK;
-$VERSION = 0.01;
-@ISA = qw(Exporter);
+our @ISA = qw(Exporter);
+our @EXPORT = qw(every);
 
+use Scalar::Util qw(looks_like_number);
+
+my %counters;
+my %time_counters;
+
+# Arg must be defined and be a positive number
+sub _check_arg
 {
- my %counters;
- my %time_counters;
- sub every
- {
-  my ($div, @id) = @_;
+    my $arg = $_[0];
 
-  if ($div eq 'seconds')
-  {
-   $div = shift @id;			# the seconds will follow the 'seconds' string
+    if (! defined($arg)) {
+        require Carp;
+        Carp::croak('Argument missing or undefined');
+    }
+    if (! Scalar::Util::looks_like_number($arg)) {
+        require Carp;
+        Carp::croak('Argument is not numeric');
+    }
+    if ($arg <= 0) {
+        require Carp;
+        Carp::croak('Argument must be greater than zero');
+    }
+}
 
-   $time_counters{caller(), $div, @id} ||= time;
+sub every
+{
+    my ($div, @id) = @_;
 
-   my $then = $time_counters{caller(), $div, @id};
-   my $diff = time - ($then + $div);
-   return ($diff >= 0) ? ($time_counters{caller(), $div, @id} = time) : 0;
-  }
+    if (defined($div) && ($div =~ /^sec/)) {    # Allows 'seconds', 'secs', etc.
+        my $now = time();   # Capture current time
 
-  return !(++$counters{ caller(), $div, @id } % $div);
- }
+        $div = shift(@id);
+        _check_arg($div);   # Validate arg
+
+        my $key = join('_', caller(), $div, @id);  # Hash key
+
+        if (my $then = $time_counters{$key}) {
+            my $diff = $now - ($then + $div);
+            return ($diff >= 0) ? ($time_counters{$key} = $now) : 0;
+        } else {
+            # First time called
+            $time_counters{$key} = $now;
+            return;
+        }
+    }
+
+    _check_arg($div);
+    if (int($div) != $div) {    # Non-timer arg should also be an integer
+        require Carp;
+        Carp::croak('Argument is not an integer');
+    }
+
+    my $key = join('_', caller(), $div, @id);   # Hash key
+    return !(++$counters{$key} % $div);
 }
 
 1;
@@ -44,7 +82,7 @@ Every - return true every N cycles or S seconds
 
  for (0..200)
  {
-  print_stats() if every(20);		# every 20 cycles
+  print_stats() if every(20);           # every 20 cycles
   print_times() if every(seconds => 5); # every 5 or more seconds
   sleep 3;
  }
@@ -74,7 +112,8 @@ Every - return true every N cycles or S seconds
 
  Returns true when the conditions (cycles or seconds elapsed) are met.
 
- Thanks to Dr.Ruud on comp.lang.perl.misc for helping with this idea.
+ Thanks to Dr.Ruud on comp.lang.perl.misc for helping with this idea, and to
+ Jerry Hedden for cleaning it up.
 
 =head1 BUGS
 
@@ -91,5 +130,3 @@ Perl itself.
 Ted Zlatanov <tzz@lifelogs.com>
 
 =head1 SEE ALSO
-
-
