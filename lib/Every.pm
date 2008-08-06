@@ -2,10 +2,11 @@
 
 package Every;
 
+use Devel::Callsite;
 use strict;
 use warnings;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 $VERSION = eval $VERSION;
 
 use Exporter;
@@ -40,13 +41,15 @@ sub every
 {
     my ($div, @id) = @_;
 
+    my $site = callsite();
+    
     if (defined($div) && ($div =~ /^sec/)) {    # Allows 'seconds', 'secs', etc.
         my $now = time();   # Capture current time
 
         $div = shift(@id);
         _check_arg($div);   # Validate arg
 
-        my $key = join('_', caller(), $div, @id);  # Hash key
+        my $key = join('_', caller(), $div, $site, @id);  # Hash key
 
         if (my $then = $time_counters{$key}) {
             my $diff = $now - ($then + $div);
@@ -64,7 +67,7 @@ sub every
         Carp::croak('Argument is not an integer');
     }
 
-    my $key = join('_', caller(), $div, @id);   # Hash key
+    my $key = join('_', caller(), $div, $site, @id);   # Hash key
     return !(++$counters{$key} % $div);
 }
 
@@ -96,24 +99,18 @@ Every - return true every N cycles or S seconds
  Returns true every $number times it's called, or every time $number
  seconds have elapsed since the last time it was called.
 
- The every() function keeps track of where it was called by line.  If
- you need to call it twice on the same line, e.g.
+ The every() function keeps track of where it was called by line, even
+ if you call it twice on the same line, e.g.
 
  print "hello" if every(5) or every(6);
-
- That won't work.  The right way is to use an identifier, e.g.
-
- print "hello" if every(5, "a") or every(6, "b");
-
- The reason is that caller() doesn't return a position, only a line
- number.
 
 =head1 DESCRIPTION
 
  Returns true when the conditions (cycles or seconds elapsed) are met.
 
- Thanks to Dr.Ruud on comp.lang.perl.misc for helping with this idea, and to
- Jerry Hedden for cleaning it up.
+ Thanks to Dr.Ruud on comp.lang.perl.misc for helping with this idea,
+ and to Jerry Hedden for cleaning it up.  Thanks to Ben Morrow for
+ getting Devel::Callsite started, which module is essential to Every.
 
 =head1 BUGS
 
