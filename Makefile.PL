@@ -5,6 +5,6 @@ WriteMakefile(
 	ABSTRACT_FROM => 'lib/Every.pm',
 	AUTHOR        => 'Ted Zlatanov <tzz@lifelogs.com>',
 	PREREQ_PM     => { 
-                          'Devel::Callsite' => 0, 
+                          'Devel::Callsite' => 0.04, 
                          },
 );

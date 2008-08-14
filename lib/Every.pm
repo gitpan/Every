@@ -6,7 +6,7 @@ use Devel::Callsite;
 use strict;
 use warnings;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 $VERSION = eval $VERSION;
 
 use Exporter;
@@ -41,7 +41,7 @@ sub every
 {
     my ($div, @id) = @_;
 
-    my $site = callsite();
+    my $site = callsite() . '/' . context();
     
     if (defined($div) && ($div =~ /^sec/)) {    # Allows 'seconds', 'secs', etc.
         my $now = time();   # Capture current time
@@ -103,6 +103,9 @@ Every - return true every N cycles or S seconds
  if you call it twice on the same line, e.g.
 
  print "hello" if every(5) or every(6);
+
+ The every() function will use the Devel::Callsite module to find the
+ opcode and interpreter context (both unique numbers).
 
 =head1 DESCRIPTION
 

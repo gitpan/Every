@@ -1,12 +1,12 @@
 --- #YAML:1.0
 name:                Every
-version:             0.05
+version:             0.06
 abstract:            return true every N cycles or S seconds
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.36
 distribution_type:   module
 requires:     
-    Devel::Callsite:               0
+    Devel::Callsite:               0.04
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.2.html
     version: 1.2
