@@ -6,7 +6,7 @@ use Devel::Callsite;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 $VERSION = eval $VERSION;
 
 use Exporter;
@@ -68,7 +68,7 @@ sub every
     }
 
     my $key = join('_', caller(), $div, $site, @id);   # Hash key
-    return !(++$counters{$key} % $div);
+    return !(++$counters{$key} % $div) ? 1 : 0;
 }
 
 1;
@@ -96,28 +96,34 @@ Every - return true every N cycles or S seconds
 
 =head2 every( seconds => $number [, @id] )
 
- Returns true every $number times it's called, or every time $number
- seconds have elapsed since the last time it was called.
+Returns true every C<$number> times it's called, or every time C<$number>
+seconds have elapsed since the last time it was called.
 
- The every() function keeps track of where it was called by line, even
- if you call it twice on the same line, e.g.
+The C<every()> function keeps track of where it was called by line, even
+if you call it twice on the same line, e.g.
 
  print "hello" if every(5) or every(6);
 
- The every() function will use the Devel::Callsite module to find the
- opcode and interpreter context (both unique numbers).
+The C<every()> function will use the Devel::Callsite module to find the
+opcode and interpreter context (both unique numbers).
+
+The optional @id is a list of arguments that compose a unique identifier.
+In other words, C<every(100, 'x')> will run its 100 cycles independently of
+C<every(100, 'x', 'y')>.
 
 =head1 DESCRIPTION
 
- Returns true when the conditions (cycles or seconds elapsed) are met.
+Returns true when the conditions (cycles or seconds elapsed) are met.
+The first cycle doesn't count (so e.g. C<every(100)> will be true at
+100, 200, etc.)
 
- Thanks to Dr.Ruud on comp.lang.perl.misc for helping with this idea,
- and to Jerry Hedden for cleaning it up.  Thanks to Ben Morrow for
- getting Devel::Callsite started, which module is essential to Every.
+Thanks to Dr.Ruud on comp.lang.perl.misc for helping with this idea,
+and to Jerry Hedden for cleaning it up.  Thanks to Ben Morrow for
+getting Devel::Callsite started, which module is essential to Every.
 
 =head1 BUGS
 
- None known.
+None known.
 
 =head1 COPYRIGHT
 
