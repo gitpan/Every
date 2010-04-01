@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Every
-version:            0.07
+version:            0.08
 abstract:           return true every N cycles or S seconds
 author:
     - Ted Zlatanov <tzz@lifelogs.com>

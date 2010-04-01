@@ -6,7 +6,7 @@ use Devel::Callsite;
 use strict;
 use warnings;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 $VERSION = eval $VERSION;
 
 use Exporter;
@@ -77,6 +77,8 @@ __END__
 
 =pod
 
+=encoding utf-8
+
 =head1 NAME
 
 Every - return true every N cycles or S seconds
@@ -120,6 +122,8 @@ The first cycle doesn't count (so e.g. C<every(100)> will be true at
 Thanks to Dr.Ruud on comp.lang.perl.misc for helping with this idea,
 and to Jerry Hedden for cleaning it up.  Thanks to Ben Morrow for
 getting Devel::Callsite started, which module is essential to Every.
+
+Thanks to Jerrad Pierce and ikegami for the bug reports and help.
 
 =head1 BUGS
 
